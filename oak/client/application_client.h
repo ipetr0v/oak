@@ -19,8 +19,11 @@
 
 #include "asylo/grpc/auth/enclave_channel_credentials.h"
 #include "asylo/grpc/auth/null_credentials_options.h"
+#include "asylo/grpc/auth/sgx_local_credentials_options.h"
 #include "asylo/identity/descriptions.h"
 #include "asylo/identity/init.h"
+#include "asylo/identity/enclave_assertion_authority_config.pb.h"
+#include "asylo/identity/sgx/sgx_local_assertion_authority_config.pb.h"
 #include "asylo/util/logging.h"
 #include "include/grpcpp/grpcpp.h"
 #include "oak/client/authorization_bearer_token_metadata.h"
@@ -34,6 +37,8 @@ namespace oak {
 
 namespace {
 constexpr size_t kPerChannelNonceSizeBytes = 32;
+// TODO: Use asylo/identity/enclave_assertion_authority_configs.cc when it will be public
+constexpr size_t kAttestationDomainNameSize = 16;
 }  // namespace
 
 // A client connected to a previously created Oak Application.
@@ -90,7 +95,8 @@ class ApplicationClient {
   // See https://grpc.io/docs/guides/auth/.
   static std::shared_ptr<grpc::Channel> CreateChannel(std::string addr) {
     auto channel_credentials =
-        asylo::EnclaveChannelCredentials(asylo::BidirectionalNullCredentialsOptions());
+        asylo::EnclaveChannelCredentials(asylo::SelfNullCredentialsOptions().Add(
+            asylo::PeerSgxLocalCredentialsOptions()));
 
     NonceGenerator<kPerChannelNonceSizeBytes> nonce_generator;
     auto channel_authorization_token_bytes = NonceToBytes(nonce_generator.NextNonce());
@@ -106,10 +112,31 @@ class ApplicationClient {
     return grpc::CreateChannel(addr, composite_credentials);
   }
 
-  static asylo::EnclaveAssertionAuthorityConfig GetNullAssertionAuthorityConfig() {
-    asylo::EnclaveAssertionAuthorityConfig test_config;
-    asylo::SetNullAssertionDescription(test_config.mutable_description());
-    return test_config;
+  static asylo::EnclaveAssertionAuthorityConfig CreateNullAssertionAuthorityConfig() {
+    asylo::EnclaveAssertionAuthorityConfig authority_config;
+    asylo::SetNullAssertionDescription(authority_config.mutable_description());
+    return authority_config;
+  }
+
+  static asylo::EnclaveAssertionAuthorityConfig CreateSgxLocalAssertionAuthorityConfig(
+      std::string attestation_domain) {
+    if (attestation_domain.size() != kAttestationDomainNameSize) {
+      LOG(QFATAL) << "Attestation domain must be "
+                  << kAttestationDomainNameSize
+                  << " bytes in size";
+    }
+
+    asylo::EnclaveAssertionAuthorityConfig authority_config;
+    asylo::SetSgxLocalAssertionDescription(authority_config.mutable_description());
+
+    asylo::SgxLocalAssertionAuthorityConfig config;
+    *config.mutable_attestation_domain() = std::move(attestation_domain);
+
+    if (!config.SerializeToString(authority_config.mutable_config())) {
+      LOG(QFATAL) << "Failed to serialize SgxLocalAssertionAuthorityConfig";
+    }
+
+    return authority_config;
   }
 
   // This method sets up the necessary global state for Asylo to be able to validate authorities
@@ -117,9 +144,10 @@ class ApplicationClient {
   static void InitializeAssertionAuthorities() {
     LOG(INFO) << "Initializing assertion authorities";
 
-    // TODO: Provide a list of non-null Assertion Authorities when available.
+    // TODO: Add remote Sgx Assertion Authority when available.
     std::vector<asylo::EnclaveAssertionAuthorityConfig> configs = {
-        GetNullAssertionAuthorityConfig(),
+        CreateNullAssertionAuthorityConfig(),
+        CreateSgxLocalAssertionAuthorityConfig("A 16-byte domain")
     };
 
     asylo::Status status =
