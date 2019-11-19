@@ -19,6 +19,7 @@
 #include "absl/memory/memory.h"
 #include "asylo/grpc/auth/enclave_server_credentials.h"
 #include "asylo/grpc/auth/null_credentials_options.h"
+#include "asylo/grpc/auth/sgx_local_credentials_options.h"
 #include "asylo/util/logging.h"
 #include "include/grpcpp/grpcpp.h"
 #include "oak/common/app_config.h"
@@ -34,7 +35,10 @@ std::unique_ptr<OakGrpcNode> OakGrpcNode::Create(const std::string& name) {
 
   // Use ":0" notation so that server listens on a free port.
   builder.AddListeningPort(
-      "[::]:0", asylo::EnclaveServerCredentials(asylo::BidirectionalNullCredentialsOptions()),
+      "[::]:0",
+      asylo::EnclaveServerCredentials(
+          asylo::SelfSgxLocalCredentialsOptions().Add(
+              asylo::PeerNullCredentialsOptions())),
       &node->port_);
   builder.RegisterService(node.get());
 

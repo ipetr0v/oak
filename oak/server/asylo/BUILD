@@ -54,6 +54,7 @@ cc_library(
         "asylo_oak_manager.h",
     ],
     deps = [
+        "//oak/common:authority",
         "//oak/proto:application_cc_grpc",
         "//oak/proto:enclave_cc_proto",
         "//oak/proto:manager_cc_grpc",

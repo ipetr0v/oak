@@ -15,6 +15,7 @@
  */
 
 #include "asylo_oak_manager.h"
+#include "oak/common/authority.h"
 
 #include "absl/memory/memory.h"
 #include "asylo/identity/descriptions.h"
@@ -26,6 +27,7 @@ namespace oak {
 
 AsyloOakManager::AsyloOakManager(absl::string_view enclave_path)
     : Service(), enclave_path_(enclave_path), application_id_(0) {
+  oak::Authority::InitializeAssertionAuthorities();
   InitializeEnclaveManager();
 }
 
@@ -77,10 +79,12 @@ grpc::Status AsyloOakManager::CreateEnclave(
     const oak::ApplicationConfiguration& application_configuration) {
   LOG(INFO) << "Creating enclave";
   asylo::EnclaveConfig config;
-  // Explicitly initialize the null assertion authority in the enclave.
-  asylo::EnclaveAssertionAuthorityConfig* authority_config =
-      config.add_enclave_assertion_authority_configs();
-  asylo::SetNullAssertionDescription(authority_config->mutable_description());
+
+  *config.add_enclave_assertion_authority_configs() =
+      oak::Authority::CreateNullAssertionAuthorityConfig();
+  *config.add_enclave_assertion_authority_configs() =
+      oak::Authority::CreateSgxLocalAssertionAuthorityConfig();
+
   oak::InitializeInput* initialize_input = config.MutableExtension(oak::initialize_input);
   initialize_input->set_application_id(application_id);
   *initialize_input->mutable_application_configuration() = application_configuration;
