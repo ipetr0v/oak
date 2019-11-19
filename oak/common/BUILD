@@ -85,3 +85,19 @@ cc_library(
         "@com_google_absl//absl/strings",
     ],
 )
+
+cc_library(
+    name = "authority",
+    srcs = ["authority.cc"],
+    hdrs = ["authority.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//oak/proto:application_cc_grpc",
+        "@com_github_grpc_grpc//:grpc++",
+        "@com_google_asylo//asylo/grpc/auth:null_credentials_options",
+        "@com_google_asylo//asylo/grpc/auth:sgx_local_credentials_options",
+        "@com_google_asylo//asylo/identity:init",
+        "@com_google_asylo//asylo/identity/sgx:sgx_local_assertion_authority_config_cc_proto",
+        "@com_google_asylo//asylo/util:logging",
+    ],
+)
