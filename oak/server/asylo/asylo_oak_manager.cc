@@ -27,7 +27,6 @@ namespace oak {
 
 AsyloOakManager::AsyloOakManager(absl::string_view enclave_path)
     : Service(), enclave_path_(enclave_path), application_id_(0) {
-  oak::Authority::InitializeAssertionAuthorities();
   InitializeEnclaveManager();
 }
 

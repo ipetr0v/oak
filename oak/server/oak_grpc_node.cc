@@ -38,7 +38,8 @@ std::unique_ptr<OakGrpcNode> OakGrpcNode::Create(const std::string& name) {
       "[::]:0",
       asylo::EnclaveServerCredentials(
           asylo::SelfSgxLocalCredentialsOptions().Add(
-              asylo::PeerNullCredentialsOptions())),
+              //asylo::PeerNullCredentialsOptions())),
+              asylo::BidirectionalNullCredentialsOptions())),
       &node->port_);
   builder.RegisterService(node.get());
 
