@@ -4,8 +4,31 @@ readonly SCRIPTS_DIR="$(dirname "$(readlink -f "$0")")"
 # shellcheck source=scripts/common
 source "$SCRIPTS_DIR/common"
 
+COMPILATION_MODE='fastbuild'
+STRIP='sometimes'
+
+while getopts "hd" opt; do
+    case "$opt" in
+    h)
+        echo -e "Usage: $0 [-d]
+  -d    Build using debug mode
+  -h    Print this message"
+        exit 0
+        ;;
+    d)
+        COMPILATION_MODE='dbg'
+        STRIP='never'
+        ;;
+    *)
+        exit 1
+        ;;
+    esac
+done
+
 bazel_build_flags+=(
     '--config=enc-sim'
+    "--compilation_mode=$COMPILATION_MODE"
+    "--strip=$STRIP"
 )
 
 bazel build "${bazel_build_flags[@]}" //oak/server/asylo:oak
