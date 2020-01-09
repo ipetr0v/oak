@@ -63,7 +63,13 @@ filegroup(
         "@clang//:all_files",
         "@emscripten//:all_files",
         "@emscripten_fastcomp//:all_files",
+        ":emscripten_cache"
     ],
+)
+
+filegroup(
+    name = "emscripten_cache",
+    srcs = glob(["emscripten_cache/**/*"]),
 )
 
 cc_toolchain(

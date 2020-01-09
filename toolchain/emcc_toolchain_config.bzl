@@ -45,11 +45,11 @@ def _impl(ctx):
         ),
         tool_path(
             name = "cpp",
-            path = "false.sh",
+            path = "/bin/false",
         ),
         tool_path(
             name = "gcov",
-            path = "false.sh",
+            path = "/bin/false",
         ),
         tool_path(
             name = "nm",
@@ -57,7 +57,7 @@ def _impl(ctx):
         ),
         tool_path(
             name = "objdump",
-            path = "false.sh",
+            path = "/bin/false",
         ),
         tool_path(
             name = "strip",
@@ -105,8 +105,8 @@ def _impl(ctx):
                             "external/emscripten/system/include/libcxx",
                             "-isystem",
                             "external/emscripten/system/lib/libcxxabi/include",
-                            "-isystem",
-                            "external/emscripten/system/include/compat",
+                            #"-isystem",
+                            #"external/emscripten/system/include/compat",
                             "-isystem",
                             "external/emscripten/system/include",
                             "-isystem",
@@ -189,23 +189,4 @@ emcc_toolchain_config = rule(
     implementation = _impl,
     attrs = {},
     provides = [CcToolchainConfigInfo],
-)
-
-def _emsdk_impl(ctx):
-    if "EMSDK" not in ctx.os.environ or ctx.os.environ["EMSDK"].strip() == "":
-        fail("The environment variable EMSDK is not found. " +
-             "Did you run source ./emsdk_env.sh ?")
-    path = ctx.os.environ["EMSDK"]
-    ctx.symlink(path, "emsdk")
-    ctx.file("BUILD", """
-filegroup(
-    name = "all",
-    srcs = glob(["emsdk/**"]),
-    visibility = ["//visibility:public"],
-)
-""")
-
-emsdk_configure = repository_rule(
-    implementation = _emsdk_impl,
-    local = True,
 )

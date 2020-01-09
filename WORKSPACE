@@ -317,19 +317,19 @@ http_archive(
 )
 
 http_archive(
-  name = 'emscripten',
-  build_file = '//toolchain:emscripten.BUILD',
-  sha256 = "16fe379f07ba8f4bae2dc9d3b79106e948baa162b719f595344c4f4c57197af9",
-  strip_prefix = "emscripten-1.39.5",
-  url = 'https://github.com/emscripten-core/emscripten/archive/1.39.5.tar.gz',
+    name = 'emscripten',
+    build_file = '//toolchain:emscripten.BUILD',
+    sha256 = "16fe379f07ba8f4bae2dc9d3b79106e948baa162b719f595344c4f4c57197af9",
+    strip_prefix = "emscripten-1.39.5",
+    url = 'https://github.com/emscripten-core/emscripten/archive/1.39.5.tar.gz',
 )
 
 http_archive(
-  name = 'emscripten_fastcomp',
-  build_file = '//toolchain:emscripten_fastcomp.BUILD',
-  sha256 = "7b08fafe050e222fbd6a3fea7cdcdc46329dc1aba7c533225609a0dc44ee7016",
-  strip_prefix = "emscripten-fastcomp-clang-1.39.5",
-  url = 'https://github.com/emscripten-core/emscripten-fastcomp-clang/archive/1.39.5.tar.gz',
+    name = 'emscripten_fastcomp',
+    build_file = '//toolchain:emscripten_fastcomp.BUILD',
+    sha256 = "7b08fafe050e222fbd6a3fea7cdcdc46329dc1aba7c533225609a0dc44ee7016",
+    strip_prefix = "emscripten-fastcomp-clang-1.39.5",
+    url = 'https://github.com/emscripten-core/emscripten-fastcomp-clang/archive/1.39.5.tar.gz',
 )
 
 load("@io_bazel_rules_closure//closure:defs.bzl", "closure_repositories")
