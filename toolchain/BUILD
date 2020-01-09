@@ -61,7 +61,8 @@ filegroup(
         "emar.sh",
         "emcc.sh",
         "@clang//:all_files",
-        "@emsdk//:all",
+        "@emscripten//:all_files",
+        "@emscripten_fastcomp//:all_files",
     ],
 )
 
