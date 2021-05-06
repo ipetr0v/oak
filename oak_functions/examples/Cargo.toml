@@ -1,2 +1,6 @@
 [workspace]
-members = ["weather_lookup/module"]
+members = [
+    "abitest/client",
+    "abitest/module",
+    "weather_lookup/module",
+]

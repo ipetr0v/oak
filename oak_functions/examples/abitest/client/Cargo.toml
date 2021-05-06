@@ -1,0 +1,31 @@
+[package]
+name = "oak_functions_abitest_client"
+version = "0.1.0"
+authors = ["Razieh Behjati <razieh@google.com>"]
+edition = "2018"
+license = "Apache-2.0"
+
+[dependencies]
+anyhow = "*"
+assert_matches = "*"
+# base64 = "*"
+env_logger = "*"
+http = "*"
+hyper = { version = "*", features = ["client", "http2"] }
+# hyper-rustls = { version = "*", default-features = false, features = [
+#   "webpki-tokio"
+# ] }
+log = "*"
+# oak_abi = "=0.1.0"
+oak_functions_abitest_common = { path = "../common" }
+# oak_sign = "*"
+# prost = "*"
+# rustls = "*"
+# serde_json = "*"
+structopt = "*"
+tokio = { version = "*", features = [
+  "fs",
+  "macros",
+  "sync",
+  "rt-multi-thread"
+] }
