@@ -22,3 +22,7 @@ pub const TEST_DOUBLE_READ: &str = "DoubleRead";
 pub const TEST_DOUBLE_READ_RESPONSE: &str = "DoubleReadResponse";
 pub const TEST_DOUBLE_WRITE: &str = "DoubleWrite";
 pub const TEST_DOUBLE_WRITE_RESPONSE: &str = "DoubleWriteResponse";
+pub const TEST_WRITE_LOG: &str = "WriteLog";
+pub const TEST_WRITE_LOG_RESPONSE: &str = "WriteLogResponse";
+pub const TEST_STORAGE_GET: &str = "StorageGet";
+pub const TEST_STORAGE_GET_RESPONSE: &str = "StorageGetResponse";

@@ -12,6 +12,7 @@ env_logger = "*"
 http = "*"
 hyper = { version = "*", features = ["client", "http1", "http2", "runtime"] }
 log = "*"
+maplit = "*"
 oak_functions_abi = { path = "../../../abi" }
 oak_functions_abitest_common = { path = "../common" }
 prost = "*"

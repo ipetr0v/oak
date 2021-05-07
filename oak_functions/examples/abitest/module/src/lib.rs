@@ -39,6 +39,11 @@ impl TestManager {
             TEST_DOUBLE_WRITE.to_string(),
             Self::test_double_write as TestFn,
         );
+        tests.insert(TEST_WRITE_LOG.to_string(), Self::test_write_log as TestFn);
+        tests.insert(
+            TEST_STORAGE_GET.to_string(),
+            Self::test_storage_get as TestFn,
+        );
 
         Self { tests }
     }
@@ -85,13 +90,26 @@ impl TestManager {
         Ok(())
     }
 
-    // fn test_write_log_message(request: &str) -> anyhow::Result<()> {
+    fn test_write_log(request: &str) -> anyhow::Result<()> {
+        let result = oak_functions::write_log_message(request);
+        assert_matches!(result, Ok(_));
+        let result = oak_functions::write_response(TEST_WRITE_LOG_RESPONSE.as_bytes());
+        assert_matches!(result, Ok(_));
+        Ok(())
+    }
 
-    // }
+    /// Tests the correctness of the data retrieved from the database.
+    /// Response value is checked on the client side.
+    fn test_storage_get(request: &str) -> anyhow::Result<()> {
+        let result = oak_functions::storage_get_item(request.as_bytes());
+        assert_matches!(result, Ok(_));
+        let data = result.unwrap();
+        assert_matches!(data, Some(_));
 
-    // fn test_storage_get_item(request: &str) -> anyhow::Result<()> {
-
-    // }
+        let result = oak_functions::write_response(&data.unwrap());
+        assert_matches!(result, Ok(_));
+        Ok(())
+    }
 }
 
 #[cfg_attr(not(test), no_mangle)]

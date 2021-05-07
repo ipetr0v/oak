@@ -24,7 +24,7 @@ use prost::Message;
 use structopt::StructOpt;
 
 #[derive(StructOpt, Clone)]
-#[structopt(about = "HTTPS server pseudo-Node Client Example.")]
+#[structopt(about = "Oak Functions ABI test client.")]
 pub struct Opt {
     #[structopt(
         long,
@@ -59,6 +59,8 @@ impl TestManager {
         tests.push(Test::new(TEST_READ_WRITE, TEST_READ_WRITE_RESPONSE));
         tests.push(Test::new(TEST_DOUBLE_READ, TEST_DOUBLE_READ_RESPONSE));
         tests.push(Test::new(TEST_DOUBLE_WRITE, TEST_DOUBLE_WRITE_RESPONSE));
+        tests.push(Test::new(TEST_WRITE_LOG, TEST_WRITE_LOG_RESPONSE));
+        tests.push(Test::new(TEST_STORAGE_GET, TEST_STORAGE_GET_RESPONSE));
 
         Self {
             uri: uri.to_string(),
