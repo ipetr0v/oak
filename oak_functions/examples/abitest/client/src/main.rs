@@ -17,8 +17,10 @@
 //! Oak Functions ABI test client.
 
 use anyhow::Context;
-use hyper::Client;
+use log::info;
+use oak_functions_abi::proto::{Response, StatusCode};
 use oak_functions_abitest_common::*;
+use prost::Message;
 use structopt::StructOpt;
 
 #[derive(StructOpt, Clone)]
@@ -31,8 +33,6 @@ pub struct Opt {
     )]
     uri: String,
 }
-
-type TestFn = fn(&str) -> anyhow::Result<()>;
 
 struct Test {
     name: String,
@@ -57,6 +57,8 @@ impl TestManager {
     fn new(uri: &str) -> Self {
         let mut tests = vec![];
         tests.push(Test::new(TEST_READ_WRITE, TEST_READ_WRITE_RESPONSE));
+        tests.push(Test::new(TEST_DOUBLE_READ, TEST_DOUBLE_READ_RESPONSE));
+        tests.push(Test::new(TEST_DOUBLE_WRITE, TEST_DOUBLE_WRITE_RESPONSE));
 
         Self {
             uri: uri.to_string(),
@@ -66,8 +68,7 @@ impl TestManager {
 
     async fn run_tests(&self) -> anyhow::Result<()> {
         for test in &self.tests {
-            self
-                .run_test(&test.name, &test.expected_response)
+            self.run_test(&test.name, &test.expected_response)
                 .await
                 .context(format!("Couldn't run test: {}", &test.name))?;
         }
@@ -75,47 +76,47 @@ impl TestManager {
     }
 
     async fn run_test(&self, test_name: &str, expected_response: &str) -> anyhow::Result<()> {
-
+        let response = send_request(&self.uri, test_name)
+            .await
+            .context("Couldn't send request")?;
+        assert_eq!(response, expected_response);
+        info!("{} test is successful", test_name);
         Ok(())
     }
 }
 
-async fn send_request(
-    // client: &hyper::client::Client<
-    //     hyper_rustls::HttpsConnector<hyper::client::HttpConnector>,
-    //     hyper::Body,
-    // >,
-    uri: &str,
-    body: &str,
-) {
-    // let client = Client::new();
-
-    let mut http = hyper::client::HttpConnector::new();
-    // Enable HTTPS by allowing Uri`s to have the `https` scheme.
-    // http.enforce_http(false);
-    let client: hyper::client::Client<_, hyper::Body> =
-        hyper::client::Client::builder().build(http);
+async fn send_request(uri: &str, body: &str) -> anyhow::Result<String> {
+    let http = hyper::client::HttpConnector::new();
+    let client: hyper::client::Client<_, hyper::Body> = hyper::client::Client::builder()
+        .http2_only(true)
+        .build(http);
 
     let request = hyper::Request::builder()
         .method(http::Method::POST)
         .uri(uri)
-        .body(body)
-        .expect("Couldn't create HTTP request");
+        .body(body.to_string().into())
+        .context("Couldn't create HTTP request")?;
 
     let response = client
-        .request(request.to_string())
+        .request(request)
         .await
-        .expect("Couldn't send request");
-
+        .context("Couldn't send request")?;
     assert_eq!(response.status(), http::StatusCode::OK);
 
-    // log::info!("response: {:?}", resp);
-    // log::info!(
-    //     "response body: {:?}",
-    //     hyper::body::to_bytes(resp.into_body())
-    //         .await
-    //         .expect("could not read response body")
-    // );
+    let body = hyper::body::to_bytes(response.into_body())
+        .await
+        .context("Couldn't read response body")?;
+    let result = Response::decode(body).context("Couldn't decode response body")?;
+    assert_eq!(StatusCode::Success as i32, result.status);
+
+    let message = String::from_utf8(
+        result
+            .body()
+            .context("Couldn't get response message")?
+            .to_vec(),
+    )
+    .context("Couldn't parse response message to string")?;
+    Ok(message)
 }
 
 #[tokio::main]
@@ -123,46 +124,11 @@ async fn main() -> anyhow::Result<()> {
     env_logger::init();
     let opt = Opt::from_args();
 
-    // let key_pair = oak_sign::KeyPair::generate()?;
-    // let signature =
-    //     oak_sign::SignatureBundle::create(oak_abi::OAK_CHALLENGE.as_bytes(), &key_pair)?;
-
-    // let path = &opt.ca_cert_path;
-    // let ca_file = fs::File::open(path).unwrap_or_else(|e| panic!("failed to open {}: {}", path, e));
-    // let mut ca = io::BufReader::new(ca_file);
-
-    // // Build an HTTP connector which supports HTTPS too.
-    // let mut http = hyper::client::HttpConnector::new();
-    // http.enforce_http(false);
-    // // Build a TLS client, using the custom CA store for lookups.
-    // let mut tls = rustls::ClientConfig::new();
-    // tls.root_store
-    //     .add_pem_file(&mut ca)
-    //     .expect("failed to load custom CA store");
-    // // Join the above part into an HTTPS connector.
-    // let https = hyper_rustls::HttpsConnector::from((http, tls));
-
-    // let client: hyper::client::Client<_, hyper::Body> =
-    //     hyper::client::Client::builder().build(https);
-
-    // check_endpoint(
-    //     &client,
-    //     "http://localhost:8080/invoke",
-    //     &Label::public_untrusted(),
-    //     serde_json::to_string(&signature).unwrap(),
-    // )
-    // .await;
-
-    // check_endpoint(
-    //     &client,
-    //     "https://localhost:8081",
-    //     &confidentiality_label(tls_endpoint_tag("localhost:8080")),
-    //     serde_json::to_string(&signature).unwrap(),
-    // )
-    // .await;
-
     let test_manager = TestManager::new(&opt.uri);
-    test_manager.run_tests().await.context("Couldn't run tests")?;
+    test_manager
+        .run_tests()
+        .await
+        .context("Couldn't run tests")?;
 
     Ok(())
 }

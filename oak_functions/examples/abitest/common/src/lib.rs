@@ -14,7 +14,7 @@
 // limitations under the License.
 //
 
-//! Oak Functions ABI test common.
+//! Oak Functions ABI test common constants.
 
 pub const TEST_READ_WRITE: &str = "ReadWrite";
 pub const TEST_READ_WRITE_RESPONSE: &str = "ReadWriteResponse";

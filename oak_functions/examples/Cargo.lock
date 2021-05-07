@@ -655,7 +655,9 @@ dependencies = [
  "http",
  "hyper",
  "log",
+ "oak_functions_abi",
  "oak_functions_abitest_common",
+ "prost",
  "structopt",
  "tokio",
 ]

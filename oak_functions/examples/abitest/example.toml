@@ -8,11 +8,9 @@ wasm_path = "oak_functions/examples/bin/oak_functions_abitest.wasm"
 target = { Cargo = { cargo_manifest = "oak_functions/examples/abitest/module/Cargo.toml" } }
 
 [server]
-additional_args = [
-  "--config-path=./oak_functions/examples/abitest/config.toml"
-]
+additional_args = ["--config-path=./oak_functions/examples/abitest/config.toml"]
 
 [clients]
 rust = { Cargo = { cargo_manifest = "oak_functions/examples/abitest/client/Cargo.toml" }, additional_args = [
-  "--ca-cert-path=./examples/certs/local/ca.pem"
+  "--uri=http://localhost:8080/invoke"
 ] }

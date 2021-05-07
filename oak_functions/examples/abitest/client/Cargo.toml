@@ -1,27 +1,20 @@
 [package]
 name = "oak_functions_abitest_client"
 version = "0.1.0"
-authors = ["Razieh Behjati <razieh@google.com>"]
+authors = ["Ivan Petrov <ivanpetrov@google.com>"]
 edition = "2018"
 license = "Apache-2.0"
 
 [dependencies]
 anyhow = "*"
 assert_matches = "*"
-# base64 = "*"
 env_logger = "*"
 http = "*"
-hyper = { version = "*", features = ["client", "http2"] }
-# hyper-rustls = { version = "*", default-features = false, features = [
-#   "webpki-tokio"
-# ] }
+hyper = { version = "*", features = ["client", "http1", "http2", "runtime"] }
 log = "*"
-# oak_abi = "=0.1.0"
+oak_functions_abi = { path = "../../../abi" }
 oak_functions_abitest_common = { path = "../common" }
-# oak_sign = "*"
-# prost = "*"
-# rustls = "*"
-# serde_json = "*"
+prost = "*"
 structopt = "*"
 tokio = { version = "*", features = [
   "fs",

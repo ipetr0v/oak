@@ -31,16 +31,26 @@ impl TestManager {
     fn new() -> Self {
         let mut tests = HashMap::new();
         tests.insert(TEST_READ_WRITE.to_string(), Self::test_read_write as TestFn);
-        tests.insert(TEST_DOUBLE_READ.to_string(), Self::test_double_read as TestFn);
-        tests.insert(TEST_DOUBLE_WRITE.to_string(), Self::test_double_write as TestFn);
+        tests.insert(
+            TEST_DOUBLE_READ.to_string(),
+            Self::test_double_read as TestFn,
+        );
+        tests.insert(
+            TEST_DOUBLE_WRITE.to_string(),
+            Self::test_double_write as TestFn,
+        );
 
         Self { tests }
     }
 
     fn run_test(&self) -> anyhow::Result<()> {
-        let request = oak_functions::read_request().map_err(|error| anyhow!("Couldn't read request: {:?}", error))?;
+        let request = oak_functions::read_request()
+            .map_err(|error| anyhow!("Couldn't read request: {:?}", error))?;
         let test_name = String::from_utf8(request).context("Couldn't parse request")?;
-        let test = self.tests.get(&test_name).ok_or(anyhow!("Couldn't find test: {}", &test_name))?;
+        let test = self
+            .tests
+            .get(&test_name)
+            .ok_or(anyhow!("Couldn't find test: {}", &test_name))?;
         test(&test_name).context(format!("Couldn't run test: {}", &test_name))
     }
 
@@ -50,7 +60,8 @@ impl TestManager {
         Ok(())
     }
 
-    /// Tests that multiple calls to [`oak_functions_abi::read_request`] function all return the same value.
+    /// Tests that multiple calls to [`oak_functions_abi::read_request`] function all return the
+    /// same value.
     fn test_double_read(request: &str) -> anyhow::Result<()> {
         let result = oak_functions::read_request();
         assert_matches!(result, Ok(_));
@@ -62,8 +73,8 @@ impl TestManager {
         Ok(())
     }
 
-    /// Tests that multiple calls to [`oak_functions_abi::write_response`] will replace the earlier responses.
-    /// Response value is checked on the client side.
+    /// Tests that multiple calls to [`oak_functions_abi::write_response`] will replace the earlier
+    /// responses. Response value is checked on the client side.
     fn test_double_write(_request: &str) -> anyhow::Result<()> {
         // First response is empty.
         let result = oak_functions::write_response("".as_bytes());
@@ -73,8 +84,15 @@ impl TestManager {
         assert_matches!(result, Ok(_));
         Ok(())
     }
-}
 
+    // fn test_write_log_message(request: &str) -> anyhow::Result<()> {
+
+    // }
+
+    // fn test_storage_get_item(request: &str) -> anyhow::Result<()> {
+
+    // }
+}
 
 #[cfg_attr(not(test), no_mangle)]
 pub extern "C" fn main() {
