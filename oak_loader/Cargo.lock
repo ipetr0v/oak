@@ -1389,7 +1389,7 @@ name = "oak_runtime"
 version = "0.1.0"
 dependencies = [
  "anyhow",
- "base64 0.13.0",
+ "base64 0.12.3",
  "byteorder",
  "bytes",
  "chrono",
@@ -1423,12 +1423,12 @@ dependencies = [
  "sha2",
  "tink-aead",
  "tink-awskms",
- "tink-core",
+ "tink-core 0.1.2",
  "tink-daead",
  "tink-gcpkms",
  "tink-mac",
  "tink-prf",
- "tink-proto",
+ "tink-proto 0.1.1",
  "tink-signature",
  "tokio",
  "tokio-rustls",
@@ -2014,7 +2014,7 @@ dependencies = [
 name = "roughenough"
 version = "1.1.8"
 dependencies = [
- "base64 0.13.0",
+ "base64 0.12.3",
  "byteorder",
  "hex",
  "ring",
@@ -2640,9 +2640,9 @@ dependencies = [
  "generic-array",
  "prost",
  "rand 0.7.3",
- "tink-core",
+ "tink-core 0.1.2",
  "tink-mac",
- "tink-proto",
+ "tink-proto 0.1.1",
 ]
 
 [[package]]
@@ -2657,7 +2657,7 @@ dependencies = [
  "rusoto_core",
  "rusoto_credential",
  "rusoto_kms",
- "tink-core",
+ "tink-core 0.1.2",
  "tokio",
 ]
 
@@ -2677,7 +2677,24 @@ dependencies = [
  "sha-1",
  "sha2",
  "subtle",
- "tink-proto",
+ "tink-proto 0.1.1",
+]
+
+[[package]]
+name = "tink-core"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "b7fefcbc7d04471b83ca8b3c445c376d45a8ab8fc35c3aa215df51f90aa95737"
+dependencies = [
+ "digest",
+ "hkdf",
+ "lazy_static",
+ "prost",
+ "rand 0.7.3",
+ "sha-1",
+ "sha2",
+ "subtle",
+ "tink-proto 0.2.0",
 ]
 
 [[package]]
@@ -2689,15 +2706,15 @@ dependencies = [
  "aead",
  "aes-siv",
  "prost",
- "tink-core",
- "tink-proto",
+ "tink-core 0.1.2",
+ "tink-proto 0.1.1",
 ]
 
 [[package]]
 name = "tink-gcpkms"
-version = "0.1.3"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "fddf33241f3fe32a765397103a97f7cbea49818f860e0d45a1b5138fc55e381e"
+checksum = "ff574cafdf268b310b2d4c20e8d66bf98ba35093e41f848dad9144a6e9e642e8"
 dependencies = [
  "base64 0.13.0",
  "chrono",
@@ -2709,7 +2726,7 @@ dependencies = [
  "percent-encoding",
  "serde",
  "serde_json",
- "tink-core",
+ "tink-core 0.2.0",
  "tokio",
  "yup-oauth2",
 ]
@@ -2721,9 +2738,9 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7c9cec90154e63961a3e14b43ce60dd8cbc3232c1259f41852efe426ebdfb090"
 dependencies = [
  "prost",
- "tink-core",
+ "tink-core 0.1.2",
  "tink-prf",
- "tink-proto",
+ "tink-proto 0.1.1",
 ]
 
 [[package]]
@@ -2740,8 +2757,8 @@ dependencies = [
  "prost",
  "sha-1",
  "sha2",
- "tink-core",
- "tink-proto",
+ "tink-core 0.1.2",
+ "tink-proto 0.1.1",
 ]
 
 [[package]]
@@ -2757,6 +2774,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "tink-proto"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6f097af9d2db1a08ea01008f88bc803d8bda25c13bfdc076df7449da907e259f"
+dependencies = [
+ "prost",
+ "prost-build",
+]
+
+[[package]]
 name = "tink-signature"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2769,8 +2796,8 @@ dependencies = [
  "prost",
  "rand 0.7.3",
  "signature",
- "tink-core",
- "tink-proto",
+ "tink-core 0.1.2",
+ "tink-proto 0.1.1",
 ]
 
 [[package]]
