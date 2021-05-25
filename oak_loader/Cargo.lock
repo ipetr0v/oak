@@ -1428,7 +1428,7 @@ dependencies = [
  "tink-gcpkms",
  "tink-mac",
  "tink-prf",
- "tink-proto",
+ "tink-proto 0.2.0",
  "tink-signature",
  "tokio",
  "tokio-rustls",
@@ -2642,7 +2642,7 @@ dependencies = [
  "rand 0.7.3",
  "tink-core",
  "tink-mac",
- "tink-proto",
+ "tink-proto 0.1.1",
 ]
 
 [[package]]
@@ -2677,7 +2677,7 @@ dependencies = [
  "sha-1",
  "sha2",
  "subtle",
- "tink-proto",
+ "tink-proto 0.1.1",
 ]
 
 [[package]]
@@ -2690,7 +2690,7 @@ dependencies = [
  "aes-siv",
  "prost",
  "tink-core",
- "tink-proto",
+ "tink-proto 0.1.1",
 ]
 
 [[package]]
@@ -2723,7 +2723,7 @@ dependencies = [
  "prost",
  "tink-core",
  "tink-prf",
- "tink-proto",
+ "tink-proto 0.1.1",
 ]
 
 [[package]]
@@ -2741,7 +2741,7 @@ dependencies = [
  "sha-1",
  "sha2",
  "tink-core",
- "tink-proto",
+ "tink-proto 0.1.1",
 ]
 
 [[package]]
@@ -2754,6 +2754,16 @@ dependencies = [
  "prost",
  "prost-build",
  "serde",
+]
+
+[[package]]
+name = "tink-proto"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6f097af9d2db1a08ea01008f88bc803d8bda25c13bfdc076df7449da907e259f"
+dependencies = [
+ "prost",
+ "prost-build",
 ]
 
 [[package]]
@@ -2770,7 +2780,7 @@ dependencies = [
  "rand 0.7.3",
  "signature",
  "tink-core",
- "tink-proto",
+ "tink-proto 0.1.1",
 ]
 
 [[package]]
