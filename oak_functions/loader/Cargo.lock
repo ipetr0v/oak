@@ -1070,8 +1070,8 @@ dependencies = [
 name = "oak_functions_abi"
 version = "0.1.0"
 dependencies = [
- "prost 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "prost-build 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "prost 0.8.0",
+ "prost-build 0.8.0",
 ]
 
 [[package]]
@@ -1086,7 +1086,7 @@ dependencies = [
  "oak_functions_abi",
  "oak_remote_attestation",
  "oak_utils",
- "prost 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "prost 0.8.0",
  "regex",
  "structopt",
  "tokio",
@@ -1112,7 +1112,7 @@ dependencies = [
  "oak_functions_abi",
  "oak_remote_attestation",
  "oak_utils",
- "prost 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "prost 0.8.0",
  "rand",
  "serde",
  "serde_derive",
@@ -1136,8 +1136,8 @@ dependencies = [
  "anyhow",
  "bincode",
  "log",
- "prost 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "prost-build 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "prost 0.8.0",
+ "prost-build 0.8.0",
  "ring",
  "rustls",
  "serde",
@@ -1936,7 +1936,7 @@ dependencies = [
  "oak_functions_abi",
  "oak_functions_client",
  "port_check",
- "prost 0.7.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "prost 0.8.0",
  "tokio",
 ]
 
@@ -1976,9 +1976,9 @@ checksum = "cda74da7e1a664f795bb1f8a87ec406fb89a02522cf6e50620d016add6dbbf5c"
 
 [[package]]
 name = "tokio"
-version = "1.8.1"
+version = "1.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "98c8b05dc14c75ea83d63dd391100353789f5f24b8b3866542a5e85c8be8e985"
+checksum = "b4efe6fc2395938c8155973d7be49fe8d03a843726e285e100a8a383cc0154ce"
 dependencies = [
  "autocfg",
  "bytes",
