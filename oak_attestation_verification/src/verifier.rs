@@ -140,6 +140,8 @@ pub fn verify(
     // Ensure the DICE chain signatures are valid and extract the measurements,
     // public keys and other attestation-related data from the DICE chain.
     let extracted_evidence = verify_dice_chain(evidence).context("invalid DICE chain")?;
+    #[cfg(feature = "std")]
+    println!("✅ DICE chain is valid.",);
 
     // Ensure the extracted measurements match the endorsements.
     let expected_values = get_expected_values(now_utc_millis, endorsements, reference_values)?;
@@ -226,9 +228,9 @@ pub fn verify_dice_chain(evidence: &Evidence) -> anyhow::Result<ExtractedEvidenc
 
     // Sequentially verify the layers, eventually retrieving the verifying key of
     // the last layer.
-    let last_layer_verifying_key = evidence.layers.iter().try_fold(
+    let last_layer_verifying_key = evidence.layers.iter().enumerate().try_fold(
         root_layer_verifying_key,
-        |previous_layer_verifying_key, current_layer| {
+        |previous_layer_verifying_key, (index, current_layer)| {
             let cert = coset::CoseSign1::from_slice(&current_layer.eca_certificate)
                 .map_err(|_cose_err| anyhow::anyhow!("could not parse certificate"))?;
             cert.verify_signature(ADDITIONAL_DATA, |signature, contents| {
@@ -236,6 +238,12 @@ pub fn verify_dice_chain(evidence: &Evidence) -> anyhow::Result<ExtractedEvidenc
                 previous_layer_verifying_key.verify(contents, &sig)
             })
             .map_err(|error| anyhow::anyhow!(error))?;
+            #[cfg(feature = "std")]
+            println!(
+                "✅ layer {} is signed by the previous layer.",
+                // given there's a seperate root layer, we start the index at 1
+                index + 1
+            );
             let payload = cert.payload.ok_or_else(|| anyhow::anyhow!("no cert payload"))?;
             let claims = ClaimsSet::from_slice(&payload)
                 .map_err(|_cose_err| anyhow::anyhow!("could not parse claims set"))?;
@@ -274,6 +282,8 @@ pub fn verify_dice_chain(evidence: &Evidence) -> anyhow::Result<ExtractedEvidenc
             })
             .map_err(|error| anyhow::anyhow!(error))?;
     }
+
+    println!("✅ application keys are signed by the previous layer",);
 
     extract_evidence(evidence)
 }
@@ -521,10 +531,12 @@ fn verify_root_attestation_signature(
             report.validate().map_err(|msg| anyhow::anyhow!(msg))?;
 
             // Ensure that the attestation report is signed by the VCEK public key.
+            #[cfg(feature = "std")]
             verify_attestation_report_signature(&vcek, report)?;
 
-            // Check that the root ECA public key for the DICE chain is bound to the
-            // attestation report to ensure that the entire chain is valid.
+            println!("✅ SEV-SNP Attestation Report is signed by AMD.");
+            // Check that the root ECA public key for the DICE chain is bound to the attestation
+            // report to ensure that the entire chain is valid.
             let expected = &hash_sha2_256(&root_layer.eca_public_key[..])[..];
             let actual = report.data.report_data;
 
@@ -534,6 +546,8 @@ fn verify_root_attestation_signature(
                 expected.len() < actual.len() && expected == &actual[..expected.len()],
                 "The root layer's ECA public key is not bound to the attestation report"
             );
+            #[cfg(feature = "std")]
+            println!("✅ SEV-SNP Attestation Report endorses root dice layer.");
 
             Ok(())
         }
@@ -594,6 +608,7 @@ fn compare_root_layer_measurement_digests(
                     .context("no stage0 expected value provided")?,
             )
             .context("stage0 measurement values failed verification")?;
+            println!("✅ initial memory measurement matches the evidence.",);
             verify_amd_sev_attestation_report(report_values, amd_sev_values)
         }
         (Some(Report::Tdx(report_values)), _, Some(intel_tdx_values), _) => {
@@ -688,6 +703,7 @@ fn compare_kernel_layer_measurement_digests(
             .context("expected values contained no image digests")?,
     )
     .context("kernel image failed verification")?;
+    println!("✅ kernel image measurement matches the evidence.",);
 
     compare_measurement_digest(
         values.kernel_setup_data.as_ref().context("no kernel setup data evidence value")?,
@@ -697,6 +713,7 @@ fn compare_kernel_layer_measurement_digests(
             .context("expected values contained no setup_data digests")?,
     )
     .context("kernel setup data failed verification")?;
+    println!("✅ kernel setup data measurement matches the evidence.",);
 
     // TODO: b/331252282 - Remove temporary workaround for cmd line.
     match (&values.kernel_raw_cmd_line, &expected.kernel_cmd_line_text) {
@@ -764,6 +781,7 @@ fn get_application_layer_expected_values(
         endorsements.and_then(|value| value.binary.as_ref()),
         reference_values.binary.as_ref().context("container bundle reference value")?,
     )?);
+    println!("✅ application measurement matches the evidence.",);
     let configuration = Some(get_expected_measurement_digest(
         now_utc_millis,
         endorsements.and_then(|value| value.configuration.as_ref()),
@@ -815,6 +833,7 @@ fn compare_container_layer_measurement_digests(
         expected.bundle.as_ref().context("no expected bundle value")?,
     )
     .context("container bundle failed verification")?;
+    println!("✅ container measurement matches the evidence.",);
     compare_measurement_digest(
         values.config.as_ref().context("no config evidence value")?,
         expected.config.as_ref().context("no expected config value")?,
@@ -875,8 +894,8 @@ fn compare_measurement_digest(
             .find(|expected| is_raw_digest_match(measurement, expected).is_ok())
             .map(|_| ())
             .ok_or(anyhow::anyhow!(
-                "measurement digest {:?} does not match any reference values",
-                measurement
+                "measurement digest {:?} does not match any reference values (expected {:?})",
+                hex::encode(&measurement.sha2_256), expected,
             )),
         None => Err(anyhow::anyhow!("empty expected value")),
     }

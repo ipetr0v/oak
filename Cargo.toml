@@ -7,6 +7,8 @@ members = [
   "micro_rpc",
   "micro_rpc_build",
   "micro_rpc_tests",
+  "ml_transparency_demo",
+  "ml_transparency_signer",
   "oak_attestation",
   "oak_attestation_explain",
   "oak_attestation_explain_cli",

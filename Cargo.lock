@@ -2134,6 +2134,33 @@ dependencies = [
 ]
 
 [[package]]
+name = "ml_transparency_demo"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "hex",
+ "oak_attestation_verification",
+ "oak_crypto",
+ "oak_proto_rust",
+ "p256",
+ "prost",
+]
+
+[[package]]
+name = "ml_transparency_signer"
+version = "0.1.0"
+dependencies = [
+ "clap",
+ "hex",
+ "oak_attestation_verification",
+ "oak_crypto",
+ "oak_proto_rust",
+ "p256",
+ "prost",
+ "rand",
+]
+
+[[package]]
 name = "multimap"
 version = "0.8.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
